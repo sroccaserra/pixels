@@ -232,7 +232,7 @@
 							<uid>0</uid>
 						</item>
 						<item>
-							<tile>0</tile>
+							<tile>4</tile>
 							<empty>0</empty>
 							<pattern>-1</pattern>
 							<uid>0</uid>
@@ -2474,10 +2474,10 @@
 					<height>10</height>
 				</matrix>
 				<pxOffsetX>0</pxOffsetX>
-				<pxOffsetY>0</pxOffsetY>
+				<pxOffsetY>-10</pxOffsetY>
 				<isMain>0</isMain>
-				<scrollFactorX>100</scrollFactorX>
-				<scrollFactorY>100</scrollFactorY>
+				<scrollFactorX>50</scrollFactorX>
+				<scrollFactorY>50</scrollFactorY>
 				<spriteList>
 					<sprites>
 						<count>0</count>

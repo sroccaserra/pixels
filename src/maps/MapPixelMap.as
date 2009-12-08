@@ -24,15 +24,15 @@ package maps {
 			layerPixelForeground.scrollFactor.y = 1.000000;
 			layerPixelBackground = new FlxTilemap(new CSV_PixelBackground, Img_PixelBackground,99,0);
 			layerPixelBackground.x = 0;
-			layerPixelBackground.y = 0;
-			layerPixelBackground.scrollFactor.x = 1.000000;
-			layerPixelBackground.scrollFactor.y = 1.000000;
+			layerPixelBackground.y = -10;
+			layerPixelBackground.scrollFactor.x = 0.500000;
+			layerPixelBackground.scrollFactor.y = 0.500000;
 
 			allLayers = [ layerPixelForeground, layerPixelBackground ];
 
 
 			boundsMinX = 0;
-			boundsMinY = 0;
+			boundsMinY = -10;
 			boundsMaxX = 480;
 			boundsMaxY = 240;
 		}
