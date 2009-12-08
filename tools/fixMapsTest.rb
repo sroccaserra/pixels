@@ -3,7 +3,7 @@ require 'tools/fixMaps'
 
 class Tests < Test::Unit::TestCase
     def testWorkingDirectoryIsTheRootOfTheProject
-        assert_match /roxel$/, Dir.pwd
+        assert_match /pixels$/, Dir.pwd
     end
 
     def testMapsClassFilesAreFound
