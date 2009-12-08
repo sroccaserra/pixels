@@ -25,7 +25,17 @@ public class Player extends FlxSprite
     }
 
     override public function update():void {
-        // Movement
+        move();
+        animate();
+        // Reset
+        if (y >= 280)
+        {
+            reset();
+        }
+        super.update();
+    }
+
+    private function move():void {
         acceleration.x = 0;
         if(FlxG.keys.LEFT)
         {
@@ -41,7 +51,9 @@ public class Player extends FlxSprite
         {
             velocity.y = -_jumpPower;
         }
-        // Animation
+    }
+
+    private function animate():void {
         if(velocity.y != 0)
         {
             play("jump");
@@ -54,15 +66,13 @@ public class Player extends FlxSprite
         {
             play("walk");
         }
-        // Reset
-        if (y >= 280)
-        {
-            x = 16;
-            y = 16;
-            velocity.x = 0;
-            velocity.y = 0;
-        }
-        super.update();
+    }
+
+    private function reset():void {
+        x = 16;
+        y = 16;
+        velocity.x = 0;
+        velocity.y = 0;
     }
 }
 }
