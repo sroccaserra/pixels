@@ -15,9 +15,9 @@
 		<baseTileset class_id="4" tracking_level="0" version="0">
 			<path>../../data/images/pixels.png</path>
 		</baseTileset>
-		<bgColor.r>255</bgColor.r>
-		<bgColor.g>255</bgColor.g>
-		<bgColor.b>255</bgColor.b>
+		<bgColor.r>0</bgColor.r>
+		<bgColor.g>0</bgColor.g>
+		<bgColor.b>0</bgColor.b>
 		<screenPxWidth>288</screenPxWidth>
 		<screenPxHeight>216</screenPxHeight>
 	</map>
