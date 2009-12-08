@@ -1,3 +1,5 @@
+# -*- compile-command: "rake test" -*-
+
 require 'test/unit'
 require 'tools/fixMaps'
 
