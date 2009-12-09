@@ -1,5 +1,5 @@
 //-*- compile-command: "rake" -*-
-package sprites
+package characters
 {
 import org.flixel.*;
 

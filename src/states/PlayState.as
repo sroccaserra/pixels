@@ -4,7 +4,7 @@ package states
 {
 import org.flixel.*;
 import maps.*;
-import sprites.Player;
+import characters.Player;
 
 public class PlayState extends FlxState
 {

@@ -5,7 +5,7 @@ task :default => :build
 
 task :build do
     replaceFlixelPackageNameInMapClassFiles
-    sh "mxmlc -sp=src,lib -o build/roxel.swf src/Pixels.as"
+    sh "mxmlc -sp=src,lib -o build/pixels.swf src/Pixels.as"
 end
 
 task :clean do
