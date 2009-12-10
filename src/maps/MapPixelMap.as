@@ -15,7 +15,7 @@ package maps {
 
 			_setCustomValues();
 
-			bgColor = 0xffffffff;
+			bgColor = 0xff000000;
 
 			layerPixelForeground = new FlxTilemap(new CSV_PixelForeground, Img_PixelForeground,1,1);
 			layerPixelForeground.x = 0;
