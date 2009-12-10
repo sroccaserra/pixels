@@ -7,12 +7,14 @@ import org.flixel.*;
 public class Player extends FlxSprite
 {
     [Embed(source="../../data/images/pixelMen.png")]
-    private var playerImage:Class;
+    private var PlayerImage:Class;
+    [Embed(source="../../data/sounds/jump.mp3")]
+    private var JumpSound:Class;
 
     private var _jumpPower:int;
 
     public function Player(x:int, y:int) {
-        super(playerImage, x, y, true, true);
+        super(PlayerImage, x, y, true, true);
         addAnimation("idle", [0]);
         addAnimation("walk", [1, 2], 6);
         addAnimation("jump", [1]);
@@ -50,6 +52,7 @@ public class Player extends FlxSprite
         if(FlxG.keys.justPressed("X") && !velocity.y)
         {
             velocity.y = -_jumpPower;
+            FlxG.play(JumpSound);
         }
     }
 
