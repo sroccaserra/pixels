@@ -2,9 +2,11 @@
 
 This is a small retro game in Flex using Flixel.
 
-http://flixel.org/
+* http://flixel.org/
 
-Try it using the html page in the build directory.
+== Try
+
+Download and try it using the html page in the build directory.
 
 == Build
 
