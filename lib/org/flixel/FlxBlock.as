@@ -8,7 +8,7 @@ package org.flixel
 	public class FlxBlock extends FlxCore
 	{
 		protected var _pixels:BitmapData;
-		protected var _rects:FlxArray;
+		protected var _rects:Array;
 		protected var _tileSize:uint;
 		protected var _p:Point;
 		
@@ -26,11 +26,12 @@ package org.flixel
 			y = Y;
 			width = Width;
 			height = Height;
+			fixed = true;
 			if(TileGraphic == null)
 				return;
 
 			_pixels = FlxG.addBitmap(TileGraphic);
-			_rects = new FlxArray();
+			_rects = new Array();
 			_p = new Point();
 			_tileSize = _pixels.height;
 			var widthInTiles:uint = Math.ceil(width/_tileSize);
@@ -41,8 +42,8 @@ package org.flixel
 			var numGraphics:uint = _pixels.width/_tileSize;
 			for(var i:uint = 0; i < numTiles; i++)
 			{
-				if(Math.random()*(numGraphics+Empties) > Empties)
-					_rects.push(new Rectangle(_tileSize*Math.floor(Math.random()*numGraphics),0,_tileSize,_tileSize));
+				if(FlxG.random()*(numGraphics+Empties) > Empties)
+					_rects.push(new Rectangle(_tileSize*Math.floor(FlxG.random()*numGraphics),0,_tileSize,_tileSize));
 				else
 					_rects.push(null);
 			}
@@ -54,7 +55,8 @@ package org.flixel
 			super.render();
 			getScreenXY(_p);
 			var opx:int = _p.x;
-			for(var i:uint = 0; i < _rects.length; i++)
+			var rl:uint = _rects.length;
+			for(var i:uint = 0; i < rl; i++)
 			{
 				if(_rects[i] != null) FlxG.buffer.copyPixels(_pixels,_rects[i],_p,null,null,true);
 				_p.x += _tileSize;

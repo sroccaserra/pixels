@@ -3,6 +3,7 @@ package characters
 {
 import org.flixel.*;
 
+import flash.geom.Point;
 
 public class Player extends FlxSprite
 {
@@ -12,6 +13,7 @@ public class Player extends FlxSprite
     private var JumpSound:Class;
 
     private var _jumpPower:int;
+    private var _spawn:Point;
 
     public function Player(x:int, y:int) {
         super(PlayerImage, x, y, true, true);
@@ -24,15 +26,17 @@ public class Player extends FlxSprite
         drag.x = runSpeed*8;
         acceleration.y = 420;
         _jumpPower = 200;
+        _spawn = new Point();
+        _spawn.x = x;
+        _spawn.y = y;
     }
 
     override public function update():void {
         move();
         animate();
-        // Reset
         if (y >= 280)
         {
-            reset();
+            respawn();
         }
         super.update();
     }
@@ -71,9 +75,9 @@ public class Player extends FlxSprite
         }
     }
 
-    private function reset():void {
-        x = 16;
-        y = 16;
+    private function respawn():void {
+        x = _spawn.x;
+        y = _spawn.y;
         velocity.x = 0;
         velocity.y = 0;
     }

@@ -19,9 +19,6 @@ public class PlayState extends FlxState
 
         FlxG.followBounds(_map.boundsMinX, _map.boundsMinY, _map.boundsMaxX, _map.boundsMaxY);
 
-        var message:FlxText = new FlxText(0, 0, 100, 20, "Roxel!!", 0xfff93939);
-        add(message);
-
         _player = new Player(16, 16);
         this.add(_player);
         FlxG.follow(_player, 2.5);

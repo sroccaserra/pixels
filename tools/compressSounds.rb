@@ -4,9 +4,13 @@ end
 
 def convertWaves
     getWaveFiles.each do |file|
-        outfile = file.gsub 'wav', 'mp3'
+        outfile = file.gsub /wav$/, 'mp3'
         command = "lame #{file} #{outfile}"
         puts command
-        system command
+        if system command then
+            FileUtils.rm file
+        else
+            p $?
+        end
     end
 end

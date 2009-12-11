@@ -12,7 +12,9 @@ package org.flixel.data
 		//@desc		Constructor for this special effect
 		public function FlxFlash()
 		{
-			super(null,0,0,false,false,FlxG.width,FlxG.height);
+			super(null,0,0,false,false,FlxG.width,FlxG.height,0,true);
+			scrollFactor.x = 0;
+			scrollFactor.y = 0;
 			visible = false;
 		}
 		
@@ -21,9 +23,9 @@ package org.flixel.data
 		//@param	Duration		How long it takes for the flash to fade
 		//@param	FlashComplete	A function you want to run when the flash finishes
 		//@param	Force			Force the effect to reset
-		public function reset(Color:uint, Duration:Number=1, FlashComplete:Function=null, Force:Boolean=false):void
+		public function restart(Color:uint=0xffffffff, Duration:Number=1, FlashComplete:Function=null, Force:Boolean=false):void
 		{
-			if(Color == 0)
+			if(Duration == 0)
 			{
 				visible = false;
 				return;

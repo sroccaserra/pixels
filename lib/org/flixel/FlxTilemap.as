@@ -7,18 +7,19 @@ package org.flixel
 	//@desc		This is a traditional tilemap display and collision class
 	public class FlxTilemap extends FlxCore
 	{
-		private var widthInTiles:uint;
-		private var heightInTiles:uint;
-		private var _pixels:BitmapData;
-		private var _data:FlxArray;
-		private var _rects:FlxArray;
-		private var _tileSize:uint;
-		private var _p:Point;
-		private var _block:FlxBlock;
-		private var _ci:uint;
-		
-		private var _screenRows:uint;
-		private var _screenCols:uint;
+		public var widthInTiles:uint;
+		public var heightInTiles:uint;
+		protected var _pixels:BitmapData;
+		protected var _data:Array;
+		protected var _rects:Array;
+		protected var _tileSize:uint;
+		protected var _p:Point;
+		protected var _block:FlxCore;
+		protected var _ci:uint;
+		protected var _di:uint;
+		protected var _callbacks:Array;
+		protected var _screenRows:uint;
+		protected var _screenCols:uint;
 		
 		//@desc		Constructor
 		//@param	MapData			A string of comma and line-return delineated indices indicating what order the tiles should go in
@@ -29,9 +30,10 @@ package org.flixel
 		{
 			super();
 			_ci = CollisionIndex;
+			_di = DrawIndex;
 			widthInTiles = 0;
 			heightInTiles = 0;
-			_data = new FlxArray();
+			_data = new Array();
 			var c:uint;
 			var cols:Array;
 			var rows:Array = MapData.split("\n");
@@ -51,7 +53,7 @@ package org.flixel
 			}
 
 			_pixels = FlxG.addBitmap(TileGraphic);
-			_rects = new FlxArray();
+			_rects = new Array();
 			_p = new Point();
 			_tileSize = _pixels.height;
 			width = widthInTiles*_tileSize;
@@ -59,13 +61,16 @@ package org.flixel
 			var numTiles:uint = widthInTiles*heightInTiles;
 			for(var i:uint = 0; i < numTiles; i++)
 			{
-				if(_data[i] >= DrawIndex)
+				if(_data[i] >= _di)
 					_rects.push(new Rectangle(_tileSize*_data[i],0,_tileSize,_tileSize));
 				else
 					_rects.push(null);
 			}
 			
-			_block = new FlxBlock(0,0,_tileSize,_tileSize,null);
+			_block = new FlxCore();
+			_block.width = _tileSize;
+			_block.height = _tileSize;
+			_block.fixed = true;
 			
 			_screenRows = Math.ceil(FlxG.height/_tileSize)+1;
 			if(_screenRows > heightInTiles)
@@ -73,12 +78,13 @@ package org.flixel
 			_screenCols = Math.ceil(FlxG.width/_tileSize)+1;
 			if(_screenCols > widthInTiles)
 				_screenCols = widthInTiles;
+			
+			_callbacks = new Array();
 		}
 		
 		//@desc		Draws the tilemap
 		override public function render():void
 		{
-			//NOTE: While this will only draw the tiles that are actually on screen, it will ALWAYS draw one screen's worth of tiles
 			super.render();
 			getScreenXY(_p);
 			var tx:int = Math.floor(-_p.x/_tileSize);
@@ -109,29 +115,122 @@ package org.flixel
 			}
 		}
 		
-		//@desc		Collides a FlxSprite against the tilemap
-		//@param	Spr		The FlxSprite you want to collide
-		override public function collide(Spr:FlxSprite):void
+		//@desc		Collides a FlxCore object against the tilemap
+		//@param	Core		The FlxCore you want to collide against
+		override public function collide(Core:FlxCore):Boolean
 		{
-			var ix:uint = Math.floor((Spr.x - x)/_tileSize);
-			var iy:uint = Math.floor((Spr.y - y)/_tileSize);
-			var iw:uint = Math.ceil(Spr.width/_tileSize)+1;
-			var ih:uint = Math.ceil(Spr.height/_tileSize)+1;
 			var c:uint;
+			var d:uint;
+			var i:uint;
+			var dd:uint;
+			var blocks:Array = new Array();
+			
+			//First make a list of all the blocks we'll use for collision
+			var ix:uint = Math.floor((Core.x - x)/_tileSize);
+			var iy:uint = Math.floor((Core.y - y)/_tileSize);
+			var iw:uint = Math.ceil(Core.width/_tileSize)+1;
+			var ih:uint = Math.ceil(Core.height/_tileSize)+1;
 			for(var r:uint = 0; r < ih; r++)
 			{
-				if((r < 0) || (r >= heightInTiles)) continue;
+				if((r < 0) || (r >= heightInTiles)) break;
+				d = (iy+r)*widthInTiles+ix;
 				for(c = 0; c < iw; c++)
 				{
-					if((c < 0) || (c >= widthInTiles)) continue;
-					if(_data[(iy+r)*widthInTiles+ix+c] >= _ci)
-					{
-						_block.x = x+(ix+c)*_tileSize;
-						_block.y = y+(iy+r)*_tileSize;
-						_block.collide(Spr);
-					}
+					if((c < 0) || (c >= widthInTiles)) break;
+					dd = _data[d+c];
+					if(dd >= _ci)
+						blocks.push({x:x+(ix+c)*_tileSize,y:y+(iy+r)*_tileSize,data:dd});
 				}
 			}
+			
+			//Then do all the X collisions
+			var hx:Boolean = false;
+			for(i = 0; i < blocks.length; i++)
+			{
+				_block.last.x = _block.x = blocks[i].x;
+				_block.last.y = _block.y = blocks[i].y;
+				if(_block.collideX(Core))
+				{
+					d = blocks[i].data;
+					if(_callbacks[d] != null)
+						_callbacks[d](Core,_block.x/_tileSize,_block.y/_tileSize,d);
+					hx = true;
+				}
+			}
+			
+			//Then do all the Y collisions
+			var hy:Boolean = false;
+			for(i = 0; i < blocks.length; i++)
+			{
+				_block.last.x = _block.x = blocks[i].x;
+				_block.last.y = _block.y = blocks[i].y;
+				if(_block.collideY(Core))
+				{
+					d = blocks[i].data;
+					if(_callbacks[d] != null)
+						_callbacks[d](Core,_block.x/_tileSize,_block.y/_tileSize,d);
+					hy = true;
+				}
+			}
+			
+			return hx || hy;
+		}
+		
+		//@desc		Change the data and graphic of a tile in the tilemap
+		//@param	X		The X coordinate of the tile (in tiles, not pixels)
+		//@param	Y		The Y coordinate of the tile (in tiles, not pixels)
+		//@param	Tile	The new integer data you wish to inject
+		public function setTile(X:uint,Y:uint,Tile:uint):void
+		{
+			var index:uint = Y * widthInTiles + X;
+			_data[index] = Tile;
+			if(Tile >= _di)
+				_rects[index] = new Rectangle(_tileSize*Tile,0,_tileSize,_tileSize);
+			else
+				_rects[index] = null;
+		}
+		
+		//@desc		Bind a function Callback(Core:FlxCore,X:uint,Y:uint,Tile:uint) to a range of tiles
+		//@param	Tile		The tile to trigger the callback
+		//@param	Callback	The function to trigger - parameters are (Core:FlxCore,X:uint,Y:uint,Tile:uint)
+		//@param	Range		If you want this callback to work for a bunch of different tiles, input the range here (default = 1)
+		public function setTileCallback(Tile:uint,Callback:Function,Range:uint=1):void
+		{
+			if(Range <= 0) return;
+			for(var i:uint = Tile; i < Tile+Range; i++)
+				_callbacks[i] = Callback;
+		}
+		
+		//@desc		Call this function to lock the automatic camera to the map's edges
+		public function follow():void
+		{
+			FlxG.followBounds(x,y,width,height);
+		}
+		
+		//@desc		Converts a one-dimensional array of tile data to a comma-separated string
+		//@param	Data		An array full of integer tile references
+		//@param	Width		The number of tiles in each row
+		//@return	A comma-separated string containing the level data in a FlxTilemap-constructor-friendly format
+		static public function arrayToCSV(Data:Array,Width:int):String
+		{
+			var csv:String;
+			var Height:int = Data.length / Width;
+			for(var r:int = 0; r < Height; r++)
+			{
+				for(var c:int = 0; c < Width; c++)
+				{
+					if(c == 0)
+					{
+						if(r == 0)
+							csv += Data[0];
+						else
+							csv += "\n"+Data[r*Width];
+					}
+					else
+						csv += ", "+Data[r*Width+c];
+				}
+			}
+			return csv;
 		}
 	}
 }
