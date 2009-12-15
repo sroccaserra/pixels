@@ -30,6 +30,8 @@ package org.flixel
 		public var angularAcceleration:Number;
 		public var angularDrag:Number;
 		public var maxAngular:Number;
+		//@desc	The origin of the sprite will default to its center - if you change this, the visuals and the collisions will likely be pretty out-of-sync!  Just a heads up.
+		public var origin:Point;
 		//@desc	If you want to do Asteroids style stuff, check out thrust (instead of directly accessing the object's velocity or acceleration)
 		public var thrust:Number;
 		public var maxThrust:Number;
@@ -55,51 +57,33 @@ package org.flixel
 		protected var _bw:uint;
 		protected var _bh:uint;
 		protected var _r:Rectangle;
+		protected var _r2:Rectangle;
 		protected var _p:Point;
-		public var pixels:BitmapData;
 		protected var _pixels:BitmapData;
-		private var _alpha:Number;
-		private var _color:uint;
+		protected var _framePixels:BitmapData;
+		protected var _alpha:Number;
+		protected var _color:uint;
 		protected var _ct:ColorTransform;
 		protected var _mtx:Matrix;
 		
 		//@desc		Constructor
-		//@param	Graphic		The image you want to use
-		//@param	X			The initial X position of the sprite
-		//@param	Y			The initial Y position of the sprite
-		//@param	Animated	Whether the Graphic parameter is a single sprite or a row of sprites
-		//@param	Reverse		Whether you need this class to generate horizontally flipped versions of the animation frames
-		//@param	Width		If you opt to NOT use an image and want to generate a colored block, or your sprite's frames are not square, you can specify a width here 
-		//@param	Height		If you opt to NOT use an image you can specify the height of the colored block here (ignored if Graphic is not null)
-		//@param	Color		Specifies the color of the generated block (ignored if Graphic is not null)
-		//@param	Unique		Whether the graphic should be a unique instance in the graphics cache
-		public function FlxSprite(Graphic:Class=null,X:int=0,Y:int=0,Animated:Boolean=false,Reverse:Boolean=false,Width:uint=0,Height:uint=0,Color:uint=0xffffffff,Unique:Boolean=false)
+		//@param	X				The initial X position of the sprite
+		//@param	Y				The initial Y position of the sprite
+		//@param	SimpleGraphic	The graphic you want to display (OPTIONAL - for simple stuff only, do NOT use for animated images!)
+		public function FlxSprite(X:int=0,Y:int=0,SimpleGraphic:Class=null)
 		{
 			super();
-
-			if(Graphic == null)
-				pixels = FlxG.createBitmap((Width<=0)?1:Width,(Height<=0)?1:Height,Color,Unique);
-			else
-				pixels = FlxG.addBitmap(Graphic,Reverse);
-				
+			
 			last.x = x = X;
 			last.y = y = Y;
-			if(Width == 0)
-			{
-				if(Animated)
-					Width = pixels.height;
-				else
-					Width = pixels.width;
-			}
-			width = _bw = Width;
-			if(Height == 0)
-			{
-				if(Animated)
-					Height = width;
-				else
-					Height = pixels.height;
-			}
-			height = _bh = Height;
+			_p = new Point();
+			_r = new Rectangle();
+			_r2 = new Rectangle();
+			origin = new Point();
+			if(SimpleGraphic == null)
+				createGraphic(8,8);
+			else
+				loadGraphic(SimpleGraphic);
 			offset = new Point();
 			
 			velocity = new Point();
@@ -116,31 +100,108 @@ package org.flixel
 			thrust = 0;
 			
 			scale = new Point(1,1);
+			_alpha = 1;
+			_color = 0x00ffffff;
+			blend = null;
+			antialiasing = false;
 			
 			finished = false;
 			_facing = RIGHT;
 			_animations = new Array();
-			if(Reverse)
-				_flipped = pixels.width>>1;
-			else
-				_flipped = 0;
+			_flipped = 0;
 			_curAnim = null;
 			_curFrame = 0;
 			_caf = 0;
 			_frameTimer = 0;
-			
-			_p = new Point(x,y);
-			_r = new Rectangle(0,0,_bw,_bh);
-			_pixels = new BitmapData(width,height);
-			_pixels.copyPixels(pixels,_r,_pZero);
+
 			_mtx = new Matrix();
-			
 			health = 1;
-			_alpha = 1;
-			_color = 0x00ffffff;
-			blend = null;
-			
 			_callback = null;
+		}
+		
+		//@desc		Load an image from an embedded graphic file
+		//@param	Graphic		The image you want to use
+		//@param	Animated	Whether the Graphic parameter is a single sprite or a row of sprites
+		//@param	Reverse		Whether you need this class to generate horizontally flipped versions of the animation frames
+		//@param	Width		OPTIONAL - Specify the width of your sprite (helps FlxSprite figure out what to do with non-square sprites or sprite sheets)
+		//@param	Height		OPTIONAL - Specify the height of your sprite (helps FlxSprite figure out what to do with non-square sprites or sprite sheets)
+		//@param	Unique		Whether the graphic should be a unique instance in the graphics cache
+		//@return	This FlxSprite instance (nice for chaining stuff together, if you're into that)
+		public function loadGraphic(Graphic:Class,Animated:Boolean=false,Reverse:Boolean=false,Width:uint=0,Height:uint=0,Unique:Boolean=false):FlxSprite
+		{
+			_pixels = FlxG.addBitmap(Graphic,Reverse);
+			if(Reverse)
+				_flipped = _pixels.width>>1;
+			else
+				_flipped = 0;
+			if(Width == 0)
+			{
+				if(Animated)
+					Width = _pixels.height;
+				else
+					Width = _pixels.width;
+			}
+			width = _bw = Width;
+			if(Height == 0)
+			{
+				if(Animated)
+					Height = width;
+				else
+					Height = _pixels.height;
+			}
+			height = _bh = Height;
+			resetHelpers();
+			return this;
+		}
+		
+		//@desc		This function creates a flat colored square image dynamically
+		//@param	Width		The width of the sprite you want to generate 
+		//@param	Height		The height of the sprite you want to generate
+		//@param	Color		Specifies the color of the generated block
+		//@param	Unique		Whether the graphic should be a unique instance in the graphics cache
+		//@return	This FlxSprite instance (nice for chaining stuff together, if you're into that)
+		public function createGraphic(Width:uint,Height:uint,Color:uint=0xffffffff,Unique:Boolean=false):FlxSprite
+		{
+			_pixels = FlxG.createBitmap(Width,Height,Color,Unique);
+			width = _bw = _pixels.width;
+			height = _bh = _pixels.height;
+			resetHelpers();
+			return this;
+		}
+		
+		//@desc		This function allows you to set the bitmap data directly, instead of loading it through FlxG
+		//@param	Pixels		A flash BitmapData object containing preloaded graphic information
+		public function set pixels(Pixels:BitmapData):void
+		{
+			_pixels = Pixels;
+			width = _bw = _pixels.width;
+			height = _bh = _pixels.height;
+			resetHelpers();
+		}
+		
+		//@desc		This function retrieves the reference bitmap data that powers this graphic
+		//@return	A flash BitmapData object
+		public function get pixels():BitmapData
+		{
+			return _pixels;
+		}
+		
+		//@desc		Just resets some important background variables for sprite display
+		protected function resetHelpers():void
+		{
+			_r.x = 0;
+			_r.y = 0;
+			_r.width = _bw;
+			_r.height = _bh;
+			_r2.x = 0;
+			_r2.y = 0;
+			_r2.width = _pixels.width;
+			_r2.height = _pixels.height;
+			if((_framePixels == null) || (_framePixels.width != width) || (_framePixels.height != height))
+				_framePixels = new BitmapData(width,height);
+			origin.x = _bw/2;
+			origin.y = _bh/2;
+			_framePixels.copyPixels(_pixels,_r,_pZero);
 		}
 		
 		//@desc		Called by game loop, handles animation and physics
@@ -200,17 +261,17 @@ package org.flixel
 			//Simple render
 			if((angle == 0) && (scale.x == 1) && (scale.y == 1) && (blend == null))
 			{
-				FlxG.buffer.copyPixels(_pixels,_r,_p,null,null,true);
+				FlxG.buffer.copyPixels(_framePixels,_r,_p,null,null,true);
 				return;
 			}
 			
 			//Advanced render
 			_mtx.identity();
-			_mtx.translate(-(_bw>>1),-(_bh>>1));
+			_mtx.translate(-origin.x,-origin.y);
 			_mtx.scale(scale.x,scale.y);
 			if(angle != 0) _mtx.rotate(Math.PI * 2 * (angle / 360));
-			_mtx.translate(_p.x+(_bw>>1),_p.y+(_bh>>1));
-			FlxG.buffer.draw(_pixels,_mtx,null,blend,null,antialiasing);
+			_mtx.translate(_p.x+origin.x,_p.y+origin.y);
+			FlxG.buffer.draw(_framePixels,_mtx,null,blend,null,antialiasing);
 		}
 		
 		//@desc		Checks to see if a point in 2D space overlaps this FlxCore object
@@ -228,7 +289,7 @@ package org.flixel
 				ty -= Math.floor(FlxG.scroll.y*scrollFactor.y);
 			}
 			if(PerPixel)
-				return _pixels.hitTest(new Point(0,0),0xFF,new Point(X-tx,Y-ty));
+				return _framePixels.hitTest(new Point(0,0),0xFF,new Point(X-tx,Y-ty));
 			else if((X <= tx) || (X >= tx+width) || (Y <= ty) || (Y >= ty+height))
 				return false;
 			return true;
@@ -317,7 +378,7 @@ package org.flixel
 		public function randomFrame():void
 		{
 			_curAnim = null;
-			_caf = int(FlxG.random()*(pixels.width/_bw));
+			_caf = int(FlxG.random()*(_pixels.width/_bw));
 			calcFrame();
 		}
 		
@@ -343,18 +404,25 @@ package org.flixel
 		{
 			var rx:uint = _caf*_bw;
 			var ry:uint = 0;
-			if(_flipped > 0)
+
+			//Handle sprite sheets
+			var w:uint = _flipped?_flipped:_pixels.width;
+			if(rx >= w)
 			{
-				if(rx >= _flipped)
-				{
-					ry = uint(rx / _flipped) * _bh;
-					rx %= _flipped;
-				}
-				if(_facing == LEFT)
-					rx = (_flipped<<1)-rx-_bw;
+				ry = uint(rx/w)*_bh;
+				rx %= w;
 			}
-			_pixels.copyPixels(pixels,new Rectangle(rx,ry,_bw,_bh),_pZero);
-			if(_ct != null) _pixels.colorTransform(_r,_ct);
+			
+			//handle reversed sprites
+			if(_flipped && (_facing == LEFT))
+				rx = (_flipped<<1)-rx-_bw;
+			
+			//Update display bitmap
+			_r.x = rx;
+			_r.y = ry;
+			_framePixels.copyPixels(_pixels,_r,_pZero);
+			_r.x = _r.y = 0;
+			if(_ct != null) _framePixels.colorTransform(_r,_ct);
 			if(_callback != null) _callback(_curAnim.name,_curFrame,_caf);
 		}
 		
@@ -400,24 +468,45 @@ package org.flixel
 		//@param	Y			They Y coordinate of the brush's top left corner on this sprite
 		public function draw(Brush:FlxSprite,X:int=0,Y:int=0):void
 		{
-			var b:BitmapData = Brush._pixels;
+			var b:BitmapData = Brush._framePixels;
 			
 			//Simple draw
 			if((Brush.angle == 0) && (Brush.scale.x == 1) && (Brush.scale.y == 1) && (Brush.blend == null))
 			{
-				pixels.copyPixels(b,new Rectangle(0,0,b.width,b.height),new Point(X,Y),null,null,true);
+				_p.x = X;
+				_p.y = Y;
+				_r2.width = b.width;
+				_r2.height = b.height;
+				_pixels.copyPixels(b,_r2,_p,null,null,true);
+				_r2.width = _pixels.width;
+				_r2.height = _pixels.height;
 				calcFrame();
 				return;
 			}
 
 			//Advanced draw
-			var _mtx:Matrix = new Matrix();
-			_mtx.translate(-(Brush._bw>>1),-(Brush._bh>>1));
+			_mtx.identity();
+			_mtx.translate(-Brush.origin.x,-Brush.origin.y);
 			_mtx.scale(Brush.scale.x,Brush.scale.y);
 			if(Brush.angle != 0) _mtx.rotate(Math.PI * 2 * (Brush.angle / 360));
-			_mtx.translate(X+(Brush._bw>>1),Y+(Brush._bh>>1));
-			pixels.draw(b,_mtx,null,Brush.blend,null,Brush.antialiasing);
+			_mtx.translate(X+Brush.origin.x,Y+Brush.origin.y);
+			_pixels.draw(b,_mtx,null,Brush.blend,null,Brush.antialiasing);
 			calcFrame();
+		}
+		
+		//@desc		Fills this sprite's graphic with a specific color
+		//@param	Color		The color with which to fill the graphic
+		public function fill(Color:uint):void
+		{
+			_pixels.fillRect(_r2,Color);
+			calcFrame();
+		}
+		
+		//@desc		Internal function, currently only used to quickly update FlxState.screen for post-processing
+		//@param	Pixels		The flash BitmapData object you want to point at
+		internal function unsafeBind(Pixels:BitmapData):void
+		{
+			_pixels = _framePixels = Pixels;
 		}
 	}
 }

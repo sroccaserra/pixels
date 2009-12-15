@@ -2,7 +2,7 @@
 
 package maps {
 	import org.flixel.*;
-	
+
 	public class MapPixelMap extends MapBase {
 		//Media content declarations
 		[Embed(source="MapCSV_PixelMap_PixelForeground.txt", mimeType="application/octet-stream")] public var CSV_PixelForeground:Class;
@@ -10,19 +10,19 @@ package maps {
 		[Embed(source="MapCSV_PixelMap_PixelBackground.txt", mimeType="application/octet-stream")] public var CSV_PixelBackground:Class;
 		[Embed(source="../../data/images/pixels.png")] public var Img_PixelBackground:Class;
 
-		
+
 		public function MapPixelMap() {
 
 			_setCustomValues();
 
 			bgColor = 0xff000000;
 
-			layerPixelForeground = new FlxTilemap(new CSV_PixelForeground, Img_PixelForeground,1,1);
+			layerPixelForeground = new FlxTilemap(new CSV_PixelForeground, Img_PixelForeground,24, 1,1);
 			layerPixelForeground.x = 0;
 			layerPixelForeground.y = 0;
 			layerPixelForeground.scrollFactor.x = 1.000000;
 			layerPixelForeground.scrollFactor.y = 1.000000;
-			layerPixelBackground = new FlxTilemap(new CSV_PixelBackground, Img_PixelBackground,99,0);
+			layerPixelBackground = new FlxTilemap(new CSV_PixelBackground, Img_PixelBackground,24, 99,0);
 			layerPixelBackground.x = 0;
 			layerPixelBackground.y = -10;
 			layerPixelBackground.scrollFactor.x = 0.500000;

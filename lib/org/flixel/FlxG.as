@@ -14,14 +14,15 @@ package org.flixel
 	//@desc		This is a global helper class full of useful functions for audio, input, basic info, and the camera system
 	public class FlxG
 	{
-		[Embed(source="data/cursor.png")] static private var ImgDefaultCursor:Class;
+		[Embed(source="data/cursor.png")] static protected var ImgDefaultCursor:Class;
 		
 		static public var LIBRARY_NAME:String = "flixel";
 		static public var LIBRARY_MAJOR_VERSION:uint = 1;
-		static public var LIBRARY_MINOR_VERSION:uint = 35;
+		static public var LIBRARY_MINOR_VERSION:uint = 45;
 
 		static protected var _pause:Boolean;
 		static protected var _game:FlxGame;
+		static public var debug:Boolean;
 		
 		//@desc Represents the amount of time in seconds that passed since last frame
 		static public var elapsed:Number;
@@ -31,12 +32,14 @@ package org.flixel
 		static public var width:uint;
 		//@desc The height of the screen in game pixels
 		static public var height:uint;
-		//@desc Levels and scores are generic global variables that can be used for various cross-state stuff
-		static public var level:int;
+		//@desc FlxG.levels and FlxG.scores are generic global variables that can be used for various cross-state stuff
 		static public var levels:Array;
-		static public var score:int;
+		static public var level:int;
 		static public var scores:Array;
-		static public var debug:Boolean;
+		static public var score:int;
+		//@desc FlxG.saves is a generic bucket for storing FlxSaves so you can access them whenever you want
+		static public var saves:Array; 
+		static public var save:int;
 
 		//@desc The current game coordinates of the mouse pointer (not necessarily the screen coordinates)
 		static public var mouse:FlxMouse;
@@ -77,12 +80,12 @@ package org.flixel
 			{
 				if(_pause)
 				{
-					_game.pause();
+					_game.pauseGame();
 					pauseSounds();
 				}
 				else
 				{
-					_game.unpause();
+					_game.unpauseGame();
 					playSounds();
 				}
 			}

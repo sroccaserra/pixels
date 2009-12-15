@@ -16,7 +16,8 @@ public class Player extends FlxSprite
     private var _spawn:Point;
 
     public function Player(x:int, y:int) {
-        super(PlayerImage, x, y, true, true);
+        super(x, y);
+        loadGraphic(PlayerImage, true, true);
         addAnimation("idle", [0]);
         addAnimation("walk", [1, 2], 6);
         addAnimation("jump", [1]);
