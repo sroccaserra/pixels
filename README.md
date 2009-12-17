@@ -3,7 +3,7 @@ Pixels
 
 This is a small retro game in Flex using Flixel.
 
-* http://flixel.org
+* [http://flixel.org](http://flixel.org]
 
 Try
 ---
