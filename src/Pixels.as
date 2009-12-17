@@ -5,7 +5,7 @@ import org.flixel.FlxGame;
 
 import states.*;
 
-[SWF(width = "576", height = "432", backgroundColor = "#ffffff")]
+[SWF(width = "576", height = "432", backgroundColor = "#00000000")]
 
 public class Pixels extends FlxGame
 {
