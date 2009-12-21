@@ -17,12 +17,17 @@ package maps {
 
 			bgColor = 0xff000000;
 
-			layerPixelForeground = new FlxTilemap(new CSV_PixelForeground, Img_PixelForeground,24, 1,1);
+			layerPixelForeground = new FlxTilemap();
+                        layerPixelForeground.loadMap(new CSV_PixelForeground, Img_PixelForeground, 24);
 			layerPixelForeground.x = 0;
 			layerPixelForeground.y = 0;
 			layerPixelForeground.scrollFactor.x = 1.000000;
 			layerPixelForeground.scrollFactor.y = 1.000000;
-			layerPixelBackground = new FlxTilemap(new CSV_PixelBackground, Img_PixelBackground,24, 99,0);
+
+			layerPixelBackground = new FlxTilemap();
+                        layerPixelBackground.collideIndex = 99;
+                        layerPixelBackground.drawIndex = 0;
+                        layerPixelBackground.loadMap(new CSV_PixelBackground, Img_PixelBackground, 24);
 			layerPixelBackground.x = 0;
 			layerPixelBackground.y = -10;
 			layerPixelBackground.scrollFactor.x = 0.500000;
