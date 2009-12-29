@@ -7,7 +7,7 @@ import flash.geom.Point;
 
 public class Player extends FlxSprite
 {
-    [Embed(source="../../data/images/pixelMen.png")]
+    [Embed(source="../../data/images/hatMan.png")]
     private var PlayerImage:Class;
     [Embed(source="../../data/sounds/jump.mp3")]
     private var JumpSound:Class;
@@ -17,7 +17,7 @@ public class Player extends FlxSprite
 
     public function Player(x:int, y:int) {
         super(x, y);
-        loadGraphic(PlayerImage, true, true);
+        loadGraphic(PlayerImage, true, true, 5, 11);
         addAnimation("idle", [0]);
         addAnimation("walk", [1, 2], 6);
         addAnimation("jump", [1]);
