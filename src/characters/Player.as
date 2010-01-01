@@ -35,10 +35,6 @@ public class Player extends FlxSprite
     override public function update():void {
         move();
         animate();
-        if (y >= 280)
-        {
-            respawn();
-        }
         super.update();
     }
 
@@ -76,7 +72,7 @@ public class Player extends FlxSprite
         }
     }
 
-    private function respawn():void {
+    public function respawn():void {
         x = _spawn.x;
         y = _spawn.y;
         velocity.x = 0;

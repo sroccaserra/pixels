@@ -8,26 +8,28 @@ import characters.Player;
 
 public class PlayState extends FlxState
 {
-    private var _map:MapPixelMap;
-    private var _player:Player;
-
     public function PlayState() {
         super();
-        _map = new MapPixelMap;
-        FlxG.state.add(_map.layerPixelBackground);
-        FlxG.state.add(_map.layerPixelForeground);
+        _levelMap = new LevelMap();
+        _levelMap.addToState(FlxG.state);
 
-        FlxG.followBounds(_map.boundsMinX, _map.boundsMinY, _map.boundsMaxX, _map.boundsMaxY);
+        FlxG.followBounds(0, 0, _levelMap.getWidth(), _levelMap.getHeight());
 
-        _player = new Player(16, 16);
+        _player = new Player(32, 16);
         this.add(_player);
         FlxG.follow(_player, 2.5);
     }
 
     override public function update():void {
         super.update();
-        _map.layerPixelForeground.collide(_player);
-
+        if (_player.y >= _levelMap.getHeight())
+        {
+            _player.respawn();
+        }
+        _levelMap.collide(_player);
     }
+
+    private var _player:Player;
+    private var _levelMap:LevelMap;
 }
 }

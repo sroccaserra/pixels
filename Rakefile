@@ -19,4 +19,3 @@ task :test => :testTools
 task :testTools do
     ruby 'tools/*Test.rb'
 end
-
