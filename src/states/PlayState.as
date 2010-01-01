@@ -10,14 +10,14 @@ public class PlayState extends FlxState
 {
     public function PlayState() {
         super();
+
         _levelMap = new LevelMap();
-        _levelMap.addToState(FlxG.state);
+        _levelMap.addToState(this);
+        _levelMap.follow();
 
-        FlxG.followBounds(0, 0, _levelMap.getWidth(), _levelMap.getHeight());
-
-        _player = new Player(32, 16);
+        _player = new Player(_levelMap.getSpawnPoint());
         this.add(_player);
-        FlxG.follow(_player, 2.5);
+        FlxG.follow(_player, 4);
     }
 
     override public function update():void {

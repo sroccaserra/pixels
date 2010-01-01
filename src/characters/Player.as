@@ -2,21 +2,14 @@
 package characters
 {
 import org.flixel.*;
-
 import flash.geom.Point;
 
 public class Player extends FlxSprite
 {
-    [Embed(source="../../data/images/hatMan.png")]
-    private var PlayerImage:Class;
-    [Embed(source="../../data/sounds/jump.mp3")]
-    private var JumpSound:Class;
+    public function Player(spawnPoint:Point) {
+        super(spawnPoint.x, spawnPoint.y);
+        _spawnPoint = spawnPoint;
 
-    private var _jumpPower:int;
-    private var _spawn:Point;
-
-    public function Player(x:int, y:int) {
-        super(x, y);
         loadGraphic(PlayerImage, true, true, 5, 11);
         addAnimation("idle", [0]);
         addAnimation("walk", [1, 2], 6);
@@ -27,9 +20,6 @@ public class Player extends FlxSprite
         drag.x = runSpeed*8;
         acceleration.y = 420;
         _jumpPower = 200;
-        _spawn = new Point();
-        _spawn.x = x;
-        _spawn.y = y;
     }
 
     override public function update():void {
@@ -73,10 +63,18 @@ public class Player extends FlxSprite
     }
 
     public function respawn():void {
-        x = _spawn.x;
-        y = _spawn.y;
+        y = _spawnPoint.y;
         velocity.x = 0;
         velocity.y = 0;
     }
+
+    [Embed(source="../../data/images/hatMan.png")]
+    private var PlayerImage:Class;
+    [Embed(source="../../data/sounds/jump.mp3")]
+    private var JumpSound:Class;
+
+    private var _jumpPower:int;
+    private var _spawnPoint:Point;
+
 }
 }

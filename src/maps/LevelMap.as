@@ -3,6 +3,7 @@
 package maps {
 
 import org.flixel.*;
+import flash.geom.Point;
 
 public class LevelMap {
     public function LevelMap() {
@@ -28,11 +29,20 @@ public class LevelMap {
         _ground.collide(core);
     }
 
+    public function follow():void {
+        _ground.follow();
+    }
+
+    public function getSpawnPoint():Point {
+        return _spawnPoint;
+    }
+
     [Embed(source="../../data/images/level-01.png")]
     private var LevelOne:Class;
     [Embed(source="../../data/images/level-01-tiles.png")]
     private var LevelOneTiles:Class;
 
     private var _ground:FlxTilemap;
+    private var _spawnPoint:Point = new Point(32, 0);
 }
 }
