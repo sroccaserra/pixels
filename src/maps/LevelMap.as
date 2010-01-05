@@ -7,17 +7,16 @@ import flash.geom.Point;
 
 public class LevelMap {
     public function LevelMap() {
-        var tileSize:int = 24;
-
         var groundData:String = FlxTilemap.pngToCSV(LevelOne);
         _ground = new FlxTilemap();
-        _ground.loadMap(groundData, GroundTiles, tileSize);
+        _ground.loadMap(groundData, GroundTiles, 12);
+
         var backgroundData:String = FlxTilemap.arrayToCSV(getBackgroundData(), _backgroundTileWidth);
         _background = new FlxTilemap();
         _background.drawIndex = 0;
         _background.scrollFactor.x = 0.5;
         _background.scrollFactor.y = 0.5;
-        _background.loadMap(backgroundData, BackgroundTiles, tileSize);
+        _background.loadMap(backgroundData, BackgroundTiles, 24);
     }
 
     public function addToState(state:FlxState):void {
