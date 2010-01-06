@@ -9,14 +9,14 @@ public class LevelMap {
     public function LevelMap() {
         var groundData:String = FlxTilemap.pngToCSV(LevelOne);
         _ground = new FlxTilemap();
-        _ground.loadMap(groundData, GroundTiles, 12);
+        _ground.loadMap(groundData, GroundTiles);
 
         var backgroundData:String = FlxTilemap.arrayToCSV(getBackgroundData(), _backgroundTileWidth);
         _background = new FlxTilemap();
         _background.drawIndex = 0;
         _background.scrollFactor.x = 0.5;
         _background.scrollFactor.y = 0.5;
-        _background.loadMap(backgroundData, BackgroundTiles, 24);
+        _background.loadMap(backgroundData, BackgroundTiles);
     }
 
     public function addToState(state:FlxState):void {
