@@ -1,5 +1,3 @@
-//-*- compile-command: "rake" -*-
-
 package states
 {
 import flash.geom.Point;

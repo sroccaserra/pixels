@@ -1,4 +1,3 @@
-//-*- compile-command: "rake" -*-
 package characters
 {
 import org.flixel.*;

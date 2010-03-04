@@ -1,5 +1,3 @@
-//-*- compile-command: "rake" -*-
-
 package maps {
 
 import org.flixel.*;

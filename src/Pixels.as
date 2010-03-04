@@ -1,4 +1,3 @@
-//-*- compile-command: "rake" -*-
 package {
 
 import mx.rpc.http.HTTPService
