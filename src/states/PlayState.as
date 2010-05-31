@@ -1,6 +1,5 @@
 package states
 {
-import flash.geom.Point;
 
 import org.flixel.*;
 import maps.*;
@@ -8,10 +7,10 @@ import characters.Player;
 
 public class PlayState extends FlxState
 {
-[Embed(source="../../data/fonts/orbitron-medium.ttf",
-    fontName='orbitron-medium',
-    mimeType='application/x-font')]
-    private var _orbitronMedium:Class;
+// [Embed(source="../../data/fonts/orbitron-medium.ttf",
+//     fontName='orbitron-medium',
+//     mimeType='application/x-font')]
+//     private var _orbitronMedium:Class;
 
     public function PlayState() {
         super();
@@ -25,9 +24,9 @@ public class PlayState extends FlxState
         FlxG.follow(_player, 4);
 
         var title:FlxText = new FlxText(0, 0, FlxG.width, 'Trocade');
-        title.font = 'orbitron-medium';
+//        title.font = 'orbitron-medium';
         title.size = 11;
-        title.scrollFactor = new Point(0, 0);
+        title.scrollFactor = new FlxPoint(0, 0);
         title.alignment = "center";
         this.add(title);
     }

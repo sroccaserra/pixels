@@ -30,7 +30,7 @@ public class LevelMap {
         return _ground.width;
     }
 
-    public function collide(core:FlxCore):void {
+    public function collide(core:FlxObject):void {
         _ground.collide(core);
     }
 

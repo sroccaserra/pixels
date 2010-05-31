@@ -1,10 +1,16 @@
 package org.flixel.data
 {
 	import org.flixel.*;
-	
 	import flash.ui.Mouse;
 
-	public class FlxPanel extends FlxCore
+	/**
+	 * This is a little built-in support visor that developers can optionally display.
+	 * It has built in support for syndicating your game to StumbleUpon, Digg,
+	 * Reddit, Del.icio.us, and Twitter.  It also has a PayPal donate button.
+	 * This panel is automatically created by <code>FlxGame</code> and you
+	 * can toggle the visibility via <code>FlxG</code>.
+	 */
+	public class FlxPanel extends FlxObject
 	{
 		[Embed(source="donate.png")] private var ImgDonate:Class;
 		[Embed(source="stumble.png")] private var ImgStumble:Class;
@@ -14,29 +20,88 @@ package org.flixel.data
 		[Embed(source="twitter.png")] private var ImgTwitter:Class;
 		[Embed(source="close.png")] private var ImgClose:Class;
 
-		private var _topBar:FlxSprite;
-		private var _mainBar:FlxSprite;
-		private var _bottomBar:FlxSprite;
-		private var _donate:FlxButton;
-		private var _stumble:FlxButton;
-		private var _digg:FlxButton;
-		private var _reddit:FlxButton;
-		private var _delicious:FlxButton;
-		private var _twitter:FlxButton;
-		private var _close:FlxButton;
-		private var _caption:FlxText;
+		/**
+		 * @private
+		 */
+		protected var _topBar:FlxSprite;
+		/**
+		 * @private
+		 */
+		protected var _mainBar:FlxSprite;
+		/**
+		 * @private
+		 */
+		protected var _bottomBar:FlxSprite;
+		/**
+		 * @private
+		 */
+		protected var _donate:FlxButton;
+		/**
+		 * @private
+		 */
+		protected var _stumble:FlxButton;
+		/**
+		 * @private
+		 */
+		protected var _digg:FlxButton;
+		/**
+		 * @private
+		 */
+		protected var _reddit:FlxButton;
+		/**
+		 * @private
+		 */
+		protected var _delicious:FlxButton;
+		/**
+		 * @private
+		 */
+		protected var _twitter:FlxButton;
+		/**
+		 * @private
+		 */
+		protected var _close:FlxButton;
+		/**
+		 * @private
+		 */
+		protected var _caption:FlxText;
+		/**
+		 * @private
+		 */
+		protected var _payPalID:String;
+		/**
+		 * @private
+		 */
+		protected var _payPalAmount:Number;
+		/**
+		 * @private
+		 */
+		protected var _gameTitle:String;
+		/**
+		 * @private
+		 */
+		protected var _gameURL:String;
 		
-		private var _payPalID:String;
-		private var _payPalAmount:Number;
-		private var _gameTitle:String;
-		private var _gameURL:String;
+		/**
+		 * @private
+		 */
+		protected var _initialized:Boolean;
+		/**
+		 * @private
+		 */
+		protected var _closed:Boolean;
 		
-		private var _initialized:Boolean;
-		private var _closed:Boolean;
+		/**
+		 * @private
+		 */
+		protected var _ty:Number;
+		/**
+		 * @private
+		 */
+		protected var _s:Number;
 		
-		private var _ty:Number;
-		private var _s:Number;
-		
+		/**
+		 * Constructor.
+		 */
 		public function FlxPanel()
 		{
 			super();
@@ -89,10 +154,21 @@ package org.flixel.data
 			_close.scrollFactor.x = 0;
 			_close.scrollFactor.y = 0;
 			hide();
+			visible = false;
 			_s = 50;
 		}
 		
-		public function init(PayPalID:String,PayPalAmount:Number,GameTitle:String,GameURL:String,Caption:String):void
+		/**
+		 * Set up the support panel with donation and aggregation info.
+		 * Like <code>show()</code> and <code>hide()</code> this function is usually
+		 * called through <code>FlxGame</code> or <code>FlxG</code>, not directly.
+		 * 
+		 * @param	PayPalID		Your paypal username, usually your email address (leave it blank to disable donations).
+		 * @param	PayPalAmount	The default amount of the donation.
+		 * @param	GameTitle		The text that you would like to appear in the aggregation services (usually just the name of your game).
+		 * @param	GameURL			The URL you would like people to use when trying to find your game.
+		 */
+		public function setup(PayPalID:String,PayPalAmount:Number,GameTitle:String,GameURL:String,Caption:String):void
 		{
 			_payPalID = PayPalID;
 			if(_payPalID.length <= 0) _donate.visible = false;
@@ -103,6 +179,9 @@ package org.flixel.data
 			_initialized = true;
 		}
 		
+		/**
+		 * Updates and animates the panel.
+		 */
 		override public function update():void
 		{
 			if(!_initialized) return;
@@ -118,29 +197,40 @@ package org.flixel.data
 					y -= FlxG.elapsed*_s;
 					if(y < _ty) y = _ty;
 				}
+				
+				_topBar.y = y;
+				_mainBar.y = y+1;
+				_bottomBar.y = y+20;
+				_donate.reset(_donate.x,y+4);
+				_stumble.reset(_stumble.x,y+4);
+				_digg.reset(_digg.x,y+4);
+				_reddit.reset(_reddit.x,y+4);
+				_delicious.reset(_delicious.x,y+5);
+				_twitter.reset(_twitter.x,y+4);
+				_caption.reset(_caption.x,y+4);
+				_close.reset(_close.x,y+4);
 			}
-			if((y <= -21) || (y > FlxG.height)) visible = false;
-			_topBar.y = y;
-			_mainBar.y = y+1;
-			_bottomBar.y = y+20;
-			_donate.y = y+4;
-			_stumble.y = y+4;
-			_digg.y = y+4;
-			_reddit.y = y+4;
-			_delicious.y = y+5;
-			_twitter.y = y+4;
-			_caption.y = y+4;
-			_close.y = y+4;
-			if(_donate.active) _donate.update();
-			if(_stumble.active) _stumble.update();
-			if(_digg.active) _digg.update();
-			if(_reddit.active) _reddit.update();
-			if(_delicious.active) _delicious.update();
-			if(_twitter.active) _twitter.update();
-			if(_caption.active) _caption.update();
-			if(_close.active) _close.update();
+			if((y <= -21) || (y >= FlxG.height))
+				visible = false;
+			else
+				visible = true;
+			
+			if(visible)
+			{
+				if(_donate.active) _donate.update();
+				if(_stumble.active) _stumble.update();
+				if(_digg.active) _digg.update();
+				if(_reddit.active) _reddit.update();
+				if(_delicious.active) _delicious.update();
+				if(_twitter.active) _twitter.update();
+				if(_caption.active) _caption.update();
+				if(_close.active) _close.update();
+			}
 		}
 		
+		/**
+		 * Actually draws the bar to the screen.
+		 */
 		override public function render():void
 		{
 			if(!_initialized) return;
@@ -157,14 +247,20 @@ package org.flixel.data
 			if(_close.visible) _close.render();
 		}
 		
+		/**
+		 * Show the support panel.
+		 * 
+		 * @param	Top		Whether the visor should appear at the top or bottom of the screen.
+		 */
 		public function show(Top:Boolean=true):void
 		{
+			if(_closed) return;
 			if(!_initialized)
 			{
 				FlxG.log("SUPPORT PANEL ERROR: Uninitialized.\nYou forgot to call FlxGame.setupSupportPanel()\nfrom your game constructor.");
 				return;
 			}
-			if(_closed) return;
+			
 			if(Top)
 			{
 				y = -21;
@@ -175,48 +271,80 @@ package org.flixel.data
 				y = FlxG.height;
 				_ty = FlxG.height-20;
 			}
-			Mouse.show();
+			_donate.reset(_donate.x,y+4);
+			_stumble.reset(_stumble.x,y+4);
+			_digg.reset(_digg.x,y+4);
+			_reddit.reset(_reddit.x,y+4);
+			_delicious.reset(_delicious.x,y+5);
+			_twitter.reset(_twitter.x,y+4);
+			_caption.reset(_caption.x,y+4);
+			_close.reset(_close.x,y+4);
+			if(!FlxG.mouse.cursor.visible)
+				Mouse.show();
 			visible = true;
 		}
 		
+		/**
+		 * Hide the support panel.
+		 */
 		public function hide():void
 		{
 			if(y < 0) _ty = -21;
 			else _ty = FlxG.height;
 			Mouse.hide();
-			visible = false;
 		}
 		
+		/**
+		 * Called when the player presses the Donate button.
+		 */
 		public function onDonate():void
 		{
-			FlxG.openURL("https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business="+encodeURIComponent(_payPalID)+"&item_name="+encodeURIComponent(_gameTitle+" Contribution ("+_gameURL)+")&currency_code=USD&amount="+_payPalAmount);
+			FlxU.openURL("https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business="+encodeURIComponent(_payPalID)+"&item_name="+encodeURIComponent(_gameTitle+" Contribution ("+_gameURL)+")&currency_code=USD&amount="+_payPalAmount);
 		}
 		
+		/**
+		 * Called when the player presses the StumbleUpon button.
+		 */
 		public function onStumble():void
 		{
-			FlxG.openURL("http://www.stumbleupon.com/submit?url="+encodeURIComponent(_gameURL));
+			FlxU.openURL("http://www.stumbleupon.com/submit?url="+encodeURIComponent(_gameURL));
 		}
 		
+		/**
+		 * Called when the player presses the Digg button.
+		 */
 		public function onDigg():void
 		{
-			FlxG.openURL("http://digg.com/submit?url="+encodeURIComponent(_gameURL)+"&title="+encodeURIComponent(_gameTitle));
+			FlxU.openURL("http://digg.com/submit?url="+encodeURIComponent(_gameURL)+"&title="+encodeURIComponent(_gameTitle));
 		}
 		
+		/**
+		 * Called when the player presses the Reddit button.
+		 */
 		public function onReddit():void
 		{
-			FlxG.openURL("http://www.reddit.com/submit?url="+encodeURIComponent(_gameURL));
+			FlxU.openURL("http://www.reddit.com/submit?url="+encodeURIComponent(_gameURL));
 		}
 		
+		/**
+		 * Called when the player presses the del.icio.us button.
+		 */
 		public function onDelicious():void
 		{
-			FlxG.openURL("http://delicious.com/save?v=5&amp;noui&amp;jump=close&amp;url="+encodeURIComponent(_gameURL)+"&amp;title="+encodeURIComponent(_gameTitle));
+			FlxU.openURL("http://delicious.com/save?v=5&amp;noui&amp;jump=close&amp;url="+encodeURIComponent(_gameURL)+"&amp;title="+encodeURIComponent(_gameTitle));
 		}
 		
+		/**
+		 * Called when the player presses the Twitter button.
+		 */
 		public function onTwitter():void
 		{
-			FlxG.openURL("http://twitter.com/home?status=Playing"+encodeURIComponent(" "+_gameTitle+" - "+_gameURL));
+			FlxU.openURL("http://twitter.com/home?status=Playing"+encodeURIComponent(" "+_gameTitle+" - "+_gameURL));
 		}
 		
+		/**
+		 * Called when the player presses the Close button.
+		 */
 		public function onClose():void
 		{
 			_closed = true;
