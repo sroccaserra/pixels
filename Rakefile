@@ -2,12 +2,14 @@
 require 'tools/fixMaps'
 require 'tools/compressSounds'
 
+$flexunit = 'libs/flexunit/flexunit-4.0.0.swc,libs/flexunit/flexunit-uilistener-4.0.0.swc'
+
 task :default => :build
 
 task :build do
     replaceFlixelPackageNameInMapClassFiles
     convertWaves
-    sh "mxmlc -static-link-runtime-shared-libraries=true -sp=src,lib -o build/pixels.swf src/Pixels.as"
+    sh "mxmlc -static-link-runtime-shared-libraries=true -sp=src,libs -o build/pixels.swf src/Pixels.as"
 end
 
 task :clean do
@@ -18,4 +20,8 @@ task :test => :testTools
 
 task :testTools do
     ruby 'tools/*Test.rb'
+end
+
+task :testFlex do
+    sh "mxmlc -static-link-runtime-shared-libraries=true -sp=src,libs,test -library-path+=#{$flexunit} -o build/tests.swf test/TestRunner.mxml"
 end

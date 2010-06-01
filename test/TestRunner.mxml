@@ -1,0 +1,23 @@
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="*"
+                xmlns:flexunit="http://www.adobe.com/2009/flexUnitUIRunner"
+                creationComplete="onCreationComplete()">
+
+    <mx:Script>
+    <![CDATA[
+        import flexunit.framework.TestSuite;
+        import org.flexunit.listeners.UIListener;
+        import org.flexunit.runner.FlexUnitCore;
+
+        private var core:FlexUnitCore;
+
+        private function onCreationComplete():void {
+            core = new FlexUnitCore();
+            core.addListener(new UIListener(testRunner))
+            core.run(FirstSuite);
+        }
+    ]]>
+    </mx:Script>
+
+    <!-- FlexUnit GUI Component -->
+    <flexunit:TestRunnerBase id="testRunner" width="100%" height="100%" />
+</mx:Application>
